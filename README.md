@@ -51,7 +51,6 @@ Only a person or a loopeng branch skill runs these. They set `disable-model-invo
 | `plugins/loopeng/skills/stack` | Git hygiene: tree of branches from the Branch plan |
 | `plugins/loopeng/skills/loop` | Feedback loop for one subtask: build, verify, fix until it passes, commit |
 | `plugins/loopeng/skills/sweep` | Final code review, docs update and report |
-| `plugins/loopeng/skills/auto` | Older single-skill execution with auto-commit. No other skill calls it |
 | `plugins/loopeng/references/run.md` | Run terms and checks shared by the execution skills |
 | `plugins/loopeng/skills/commit-message` | Commit message style, called by the execution skills |
 | `plugins/loopeng/skills/generate-map` | Docs map in `CLAUDE.md` |
