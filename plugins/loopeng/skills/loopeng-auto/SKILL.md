@@ -1,7 +1,7 @@
 ---
 name: loopeng-auto
-description: Loop-engineering execution with auto-commit — takes an approved spec file from /loopeng-plan, then each subtask is built test-first, independently verified (objectiveness check, then a fresh main verifier per subtask that reads the spec itself) and committed without pausing, then a final code review of the whole task, then one docs-updater agent updates the docs from the spec and the diff so the spec can be deleted without losing anything. Run only when the user invokes /loopeng-auto.
-argument-hint: <path to an approved spec file from /loopeng-plan>
+description: Loop-engineering execution with auto-commit — takes an approved spec file from /loopeng:loopeng-plan, then each subtask is built test-first, independently verified (objectiveness check, then a fresh main verifier per subtask that reads the spec itself) and committed without pausing, then a final code review of the whole task, then one docs-updater agent updates the docs from the spec and the diff so the spec can be deleted without losing anything. Run only when the user invokes /loopeng:loopeng-auto.
+argument-hint: <path to an approved spec file from /loopeng:loopeng-plan>
 disable-model-invocation: true
 ---
 
@@ -13,9 +13,9 @@ Spec file: $ARGUMENTS
 
 - If no spec file is given, list the spec files in the repo's
   `docs/specs/` and ask which one to run. Don't plan here: if the user
-  has no spec, tell them to run `/loopeng-plan <task>` first.
+  has no spec, tell them to run `/loopeng:loopeng-plan <task>` first.
 - Read the spec file. If its status is not `**Status:** approved`, stop
-  and tell the user to approve it through `/loopeng-plan`.
+  and tell the user to approve it through `/loopeng:loopeng-plan`.
 - The spec is the source of truth. Its header names the repo and any md
   file to update. **The docs** are the repo's own context files
   (`README.md`, `CLAUDE.md`/`AGENTS.md`, `docs/*.md`, `docs/adr/`).
@@ -80,14 +80,14 @@ Three agents and one skill are used:
 
 Every verification prompt goes through two agents, in order:
 
-1. **`objectiveness-verifier`** (`subagent_type: "objectiveness-verifier"`,
+1. **`objectiveness-verifier`** (`subagent_type: "loopeng:objectiveness-verifier"`,
    a fresh one each time, `run_in_background: false`). Send it the exact
    prompt you intend to give the main verifier. It only judges whether
    the prompt is objective and returns **PASS** or **FAIL**.
    - **FAIL**: rewrite the prompt without the quoted lines and send it to
      a new objectiveness verifier. Nothing goes to the main verifier.
    - **PASS**: send that exact prompt, unchanged, to the main verifier.
-2. **`main-verifier`** (`subagent_type: "main-verifier"`).
+2. **`main-verifier`** (`subagent_type: "loopeng:main-verifier"`).
    - Spawn a new one for the first verification round of each subtask,
      and keep its agent ID.
    - Re-verification of the same subtask after a FAIL: continue that
@@ -150,7 +150,7 @@ Limits, counted separately per subtask:
   use `git add -A` or `git add .`. Check with `git status` /
   `git diff --cached --stat` that nothing unrelated is staged.
 - Write every commit message by calling the Skill tool with
-  "commit-message".
+  "loopeng:commit-message".
 - Never use `--no-verify` or `--amend`, and never push. If a pre-commit
   hook fails, fix the cause, re-stage and make a new commit. If the fix
   touches code, re-verify first.
@@ -192,7 +192,7 @@ flag it to the user with the latest review output. Don't run a 4th round.
 The spec may be deleted after the run, so everything in it that should
 outlast the run must end up in the docs, code or tests.
 
-- Spawn one `docs-updater` (`subagent_type: "docs-updater"`,
+- Spawn one `docs-updater` (`subagent_type: "loopeng:docs-updater"`,
   `run_in_background: false`). The prompt contains only: the repo path,
   the spec file path, the base commit, the doc paths, and the md file to
   update if the spec names one. It edits the docs and returns a coverage

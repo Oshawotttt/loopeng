@@ -1,6 +1,6 @@
 ---
 name: loopeng-plan
-description: Discovery and planning for loop engineering — reads the repo's docs and code, asks until it has enough, then writes an approved spec file in the repo (dependencies and blockers first, suggested splits, subtasks with testable acceptance-criteria checklists, human checks last) for /loopeng-auto to execute. Run only when the user invokes /loopeng-plan.
+description: Discovery and planning for loop engineering — reads the repo's docs and code, asks until it has enough, then writes an approved spec file in the repo (dependencies and blockers first, suggested splits, subtasks with testable acceptance-criteria checklists, human checks last) for /loopeng:loopeng-auto to execute. Run only when the user invokes /loopeng:loopeng-plan.
 argument-hint: <task + any context, free text; name an md file to update if you want one>
 disable-model-invocation: true
 ---
@@ -11,7 +11,7 @@ Task: $ARGUMENTS
 
 This skill only plans. It writes code nowhere, makes no commits, creates no
 branches and runs no other git writes. The spec it produces is executed
-later by `/loopeng-auto <spec file>`.
+later by `/loopeng:loopeng-auto <spec file>`.
 
 **The repo** is the git repository the task is in: the current working
 directory's repo, unless the task names another. If that is unclear, ask
@@ -64,7 +64,7 @@ Once the task can be split into subtasks, write the spec **in the repo**:
 `docs/specs/<YYYY-MM-DD>-<task-slug>.md`, where `<task-slug>` is the task
 title in lowercase kebab-case (e.g. `add-csv-export`). If the repo already
 keeps specs somewhere else, use that folder instead. Don't stage or commit
-it: `/loopeng-auto` commits it on the feature branch.
+it: `/loopeng:loopeng-auto` commits it on the feature branch.
 
 The spec is the source of truth for the whole run: the verifiers and the
 final review read it. Write only facts and decisions in it, no persuasion
@@ -115,7 +115,7 @@ The spec file has this structure, in this order:
    groups have no dependency between them (no subtask in one group is
    blocked by a subtask in another, and they don't change the same
    files), suggest splitting them into separate specs, one per group, each
-   run as its own `/loopeng-auto` on its own branch. Name the groups and
+   run as its own `/loopeng:loopeng-auto` on its own branch. Name the groups and
    their subtasks. If every subtask is connected, write "No split: all
    subtasks are connected" and say through which dependency.
 4. **Out of scope**: what this task deliberately does not do, including
@@ -175,4 +175,4 @@ The spec file has this structure, in this order:
   approval: discuss them, revise the spec file, and present it again.
 - On explicit approval, set `**Status:** approved` in each approved spec
   file. Then stop and tell the user the command(s) to run, one per spec:
-  `/loopeng-auto <spec file path>`.
+  `/loopeng:loopeng-auto <spec file path>`.
