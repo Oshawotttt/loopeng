@@ -1,18 +1,15 @@
 ---
 name: commit-message
-description: Write a git commit message in the user's style — Conventional Commits, one lowercase line, body only when needed (always for breaking changes, security fixes, data migrations and reverts), no workflow labels, no AI attribution. Use whenever writing or proposing a commit message.
+description: Write or propose a git commit message in the user's Conventional Commits style.
 ---
 
 # Commit message
 
-Write the message only. This skill doesn't stage, commit or amend. Return
-the message in a code block, exactly as it should be committed.
+Return the message in a code block, exactly as it should be committed.
 
 ## Subject line
 
-- Conventional Commits 1.0.0
-  (https://www.conventionalcommits.org/en/v1.0.0/):
-  `<type>[optional scope]: <description>`.
+- Conventional Commits 1.0.0: `<type>[optional scope]: <description>`.
 - Types: `feat` (new functionality), `fix` (bug fix), or `docs`, `test`,
   `refactor`, `perf`, `build`, `ci`, `chore`, `style`, `revert` as
   appropriate.
@@ -42,6 +39,5 @@ the message in a code block, exactly as it should be committed.
 - Workflow labels: no subtask numbers or IDs (`S1`, `subtask 2`, `step
   3`), no "per plan", no verifier or review rounds. Someone reading
   `git log` should only see what changed.
-- AI attribution: no `Co-authored-by` for an AI, no "Generated with
-  Claude Code", no mention of Claude.
+- AI attribution: no `Co-authored-by` for an AI.
 - Filler: "this commit", "I", "we", "now".

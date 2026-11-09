@@ -22,23 +22,38 @@ Install the plugins it depends on. These are not included:
 /plugin install diagram-design@diagram-design
 ```
 
-- `mattpocock-skills`: required. `/loopeng:loopeng-auto` calls its `tdd` and `code-review` skills.
+- `mattpocock-skills`: required. The loopeng execution skills call its `tdd` and `code-review` skills.
 - `diagram-design`: needed only for `/loopeng:generate-summary`.
 
 ## Workflow
 
 1. `/loopeng:generate-map`: add a docs map to the repo's `CLAUDE.md`.
-2. `/loopeng:loopeng-plan <task>`: write and approve a spec.
-3. `/loopeng:loopeng-auto <spec file>`: build, verify and commit each subtask, review the work, then update the docs.
+2. `/loopeng:loopeng-plan <task>`: write and approve a spec in `docs/specs/`.
+3. Run the spec with the git hygiene you want. Both build, verify and commit each subtask, review the work, then update the docs:
+   - `/loopeng:loopeng-branch <spec file>`: one branch per spec, no push.
+   - `/loopeng:loopeng-orchestrate <spec file>`, then `/loopeng:loopeng-stack <spec file> [subtask IDs]`: a tree of local branches, no push. The first skill suggests a grouping, and you approve it. With subtask IDs, the second runs only those, skips the sweep, and leaves the rest to you, so you can use parallel worktrees.
 4. `/loopeng:generate-summary`: build or update `docs/summary.html`, a visual summary for people.
+
+To step through a run by hand on a feature branch, use the parts directly:
+
+- `/loopeng:loopeng-loop <spec file> <subtask ID>`: the feedback loop for one subtask. Run it once per subtask, in dependency order.
+- `/loopeng:loopeng-sweep <spec file>`: the code review, docs update and report.
+
+Only a person or a loopeng branch skill runs these. They set `disable-model-invocation`, so Claude can't fire them on its own, and the branch skills read their files directly.
 
 ## Contents
 
 | Item | Role |
 |---|---|
 | `plugins/loopeng/skills/loopeng-plan` | Discovery and approved spec |
-| `plugins/loopeng/skills/loopeng-auto` | Executes a spec with auto-commit |
-| `plugins/loopeng/skills/commit-message` | Commit message style, called by `loopeng-auto` |
+| `plugins/loopeng/skills/loopeng-branch` | Git hygiene: one branch per spec |
+| `plugins/loopeng/skills/loopeng-orchestrate` | Spec phase: suggests a grouping and writes the approved Branch plan |
+| `plugins/loopeng/skills/loopeng-stack` | Git hygiene: tree of branches from the Branch plan |
+| `plugins/loopeng/skills/loopeng-loop` | Feedback loop for one subtask: build, verify, fix until it passes, commit |
+| `plugins/loopeng/skills/loopeng-sweep` | Final code review, docs update and report |
+| `plugins/loopeng/skills/loopeng-auto` | Older single-skill execution with auto-commit. No other skill calls it |
+| `plugins/loopeng/references/loopeng-run.md` | Run terms and checks shared by the execution skills |
+| `plugins/loopeng/skills/commit-message` | Commit message style, called by the execution skills |
 | `plugins/loopeng/skills/generate-map` | Docs map in `CLAUDE.md` |
 | `plugins/loopeng/skills/generate-summary` | Visual summary from the docs |
 | `plugins/loopeng/agents/objectiveness-verifier.md` | Checks each verification prompt is objective |

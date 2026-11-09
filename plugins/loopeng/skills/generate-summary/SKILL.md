@@ -1,7 +1,7 @@
 ---
 name: generate-summary
-description: Builds or updates docs/summary.html, a visual, human-readable summary of a project. ARCHITECTURE.md is the backbone; the other docs (found through the CLAUDE.md docs map when there is one) are read for anything else a reader needs. Diagrams are drawn with diagram-design. Run only when the user invokes /generate-summary.
-argument-hint: "[repo path or sections to focus on, optional]"
+description: Builds or updates a visual, human-readable summary of a project.
+argument-hint: "[output file name, optional] [outline or sections to focus on, optional]"
 disable-model-invocation: true
 ---
 
@@ -9,13 +9,13 @@ disable-model-invocation: true
 
 Focus: $ARGUMENTS
 
-Build or update `docs/summary.html`: a single page a person reads to
-understand the project fast. Agents never read it: it is never a source
-for planning or for other docs. The markdown docs stay the source of
-truth; this page only summarises them.
+Build or update the output file: a single paged report a person reads to
+understand the project fast. Agents never read it.. The markdown docs stay the source of
+truth.
 
-**The repo** is the current working directory's git repo, unless the
-arguments name another.
+**The output file** is the `.html` file the arguments name, in `docs/` if
+they give a bare name. Otherwise it is `docs/summary.html`. Arguments that
+name neither the repo nor the output file are the focus.
 
 ## 1. Find the docs
 
@@ -35,11 +35,8 @@ other docs, keep only what a reader needs to understand the project, not
 everything. For example:
 
 - **Decisions**: only the major ones, and only from the ADRs in
-  `docs/adr/`. An ADR is written only for a decision that is hard to
-  reverse, surprising without context and a real trade-off, so every ADR
-  is major. List every ADR not marked `status: superseded`, one line each:
-  the decision and its why, linking the ADR file. Don't list decisions
-  from any other doc.
+  `docs/adr/`. List every ADR not marked `status: superseded`, one line each:
+  the decision and its why, linking the ADR file.
 - **Contracts**: the main interfaces between modules, at a glance (names
   and shapes, not every field).
 - **Glossary**: the domain terms a reader must know to follow the page.
@@ -53,7 +50,7 @@ and don't add your own opinions. If two docs contradict each other, don't
 pick one: list both, with their files, in a **Doc conflicts** section and
 in your report.
 
-## 3. Write `docs/summary.html`
+## 3. Write the output file
 
 **If it doesn't exist** (or isn't tracked by git): write the full page.
 
@@ -75,7 +72,7 @@ in your report.
 **If it exists**: update it instead of rewriting.
 
 - Find the commit it was last built from (the one shown on the page, or
-  `git log -1 --format=%H -- docs/summary.html`).
+  `git log -1 --format=%H -- <output file>`).
 - Read `git diff <that commit> -- <each source doc>` (plus uncommitted
   changes to them). Edit only the sections whose sources changed, and
   update the date and commit at the top.
@@ -92,11 +89,11 @@ in your report.
 ## 4. Finish
 
 - Don't commit and don't stage. The user decides.
-- The output is the local file `docs/summary.html`, written with the
+- The output is the local output file, written with the
   Write or Edit tool. Don't publish it with the Artifact tool and don't
   load artifact-design, unless the user asks for a link. Then publish
   that same file as it is, with no restyling.
-- If the project has a docs map, check it lists `docs/summary.html` as
+- If the project has a docs map, check it lists the output file as
   "visual summary, never edit by hand, never read by agents". If it
   doesn't, tell the user the row to add; don't edit `CLAUDE.md` yourself.
 - Report in a few lines: created or updated, the sections changed, the

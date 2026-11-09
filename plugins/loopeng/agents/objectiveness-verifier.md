@@ -1,6 +1,6 @@
 ---
 name: objectiveness-verifier
-description: Gatekeeper that checks whether a verification prompt is objective (facts only, no author reasoning, justification, confidence or steering) before it reaches a verifier. Returns PASS or FAIL. If the parent names a target verifier agent, on PASS it spawns that agent with the exact prompt and returns its output. Reads only the prompt it is given, never the codebase. Used by /loopeng-auto.
+description: Gatekeeper that checks whether a verification prompt is objective (facts only, no author reasoning, justification, confidence or steering) before it reaches a verifier. Returns PASS or FAIL. If the parent names a target verifier agent, on PASS it spawns that agent with the exact prompt and returns its output. Reads only the prompt it is given, never the codebase. Used by the loopeng skills.
 tools: Read, Agent
 model: sonnet
 effort: low

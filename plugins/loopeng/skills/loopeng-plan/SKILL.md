@@ -1,6 +1,6 @@
 ---
 name: loopeng-plan
-description: Discovery and planning for loop engineering — reads the repo's docs and code, asks until it has enough, then writes an approved spec file in the repo (dependencies and blockers first, suggested splits, subtasks with testable acceptance-criteria checklists, human checks last) for /loopeng:loopeng-auto to execute. Run only when the user invokes /loopeng:loopeng-plan.
+description: Discovery and planning for loop engineering — reads the repo's docs and code, asks until it has enough, then writes an approved spec file in the repo.
 argument-hint: <task + any context, free text; name an md file to update if you want one>
 disable-model-invocation: true
 ---
@@ -11,7 +11,8 @@ Task: $ARGUMENTS
 
 This skill only plans. It writes code nowhere, makes no commits, creates no
 branches and runs no other git writes. The spec it produces is executed
-later by `/loopeng:loopeng-auto <spec file>`.
+later by `/loopeng:loopeng-branch <spec file>` or
+`/loopeng:loopeng-stack <spec file>`.
 
 **The repo** is the git repository the task is in: the current working
 directory's repo, unless the task names another. If that is unclear, ask
@@ -31,14 +32,15 @@ and name the ADR.
 - Read the docs relevant to the task and the code it touches.
 - Check the git state of the repo (`git status`, current branch,
   `git log --oneline -10` for commit style and scopes).
-  - If the branch is `main`/`master`, propose a feature branch name.
+  - Choose the spec's branch: the current feature branch, or on
+    `main`/`master` a proposed feature branch name.
   - List any uncommitted changes that aren't part of this task. They must
     not end up in any commit.
 - If something the spec depends on is unclear (behaviour, scope, an
   interface, a choice between approaches) and the code and docs don't
   settle it, it is an open question. Don't ask what you can look up.
 - As soon as the scope and approach are clear enough to split the task
-  into subtasks, write the draft spec file (step 2) and show it. Don't
+  into subtasks, write the draft spec file (step 2) and give its path. Don't
   wait for every detail.
 - In the draft, mark each unsettled point inline as `OPEN Qn` and list it
   under **Open questions**. You may fill a gap with an assumption, but
@@ -46,6 +48,8 @@ and name the ADR.
   confirm or correct it.
 - Discuss the open questions with the user conversationally. Don't use
   multiple-choice question tools.
+- Keep it a conversation. The user reads the spec in their own time, so don't
+  repeat what's in it or what you've already asked.
 - As each one is settled, write the decision into the spec where it
   applies (see **Decisions** in step 2), remove its marker and its Open
   questions entry, and update the affected subtasks.
@@ -64,7 +68,7 @@ Once the task can be split into subtasks, write the spec **in the repo**:
 `docs/specs/<YYYY-MM-DD>-<task-slug>.md`, where `<task-slug>` is the task
 title in lowercase kebab-case (e.g. `add-csv-export`). If the repo already
 keeps specs somewhere else, use that folder instead. Don't stage or commit
-it: `/loopeng:loopeng-auto` commits it on the feature branch.
+it: the branch skill that runs the spec commits it.
 
 The spec is the source of truth for the whole run: the verifiers and the
 final review read it. Write only facts and decisions in it, no persuasion
@@ -95,8 +99,9 @@ the spec only; IDs never appear in commits.
 
 The spec file has this structure, in this order:
 
-0. **Header**: the task title, `**Status:** draft`, the repo path, the
-   user-named md file to update (if any), and **Commands**: the exact
+0. **Header**: the task title, `**Status:** draft`,
+   `**Base commit:** not set` (the run fills it in when it commits the spec),
+   the repo path, the user-named md file to update (if any), and **Commands**: the exact
    commands to run the full test suite, a single test file, typecheck and
    lint, as the repo defines them. Write "none" for any the repo doesn't
    have.
@@ -107,7 +112,7 @@ The spec file has this structure, in this order:
      missing access, services or data, other people's work. Write "none"
      if there are none.
    - Uncommitted changes that must stay out of the commits, and the
-     proposed branch name if one is needed.
+     branch name.
 2. **Open questions** (while drafting only): every `OPEN Qn` and
    `ASSUMED` point, numbered, with the subtasks it affects. Delete the
    section once it is empty.
@@ -115,7 +120,7 @@ The spec file has this structure, in this order:
    groups have no dependency between them (no subtask in one group is
    blocked by a subtask in another, and they don't change the same
    files), suggest splitting them into separate specs, one per group, each
-   run as its own `/loopeng:loopeng-auto` on its own branch. Name the groups and
+   run on its own branch. Name the groups and
    their subtasks. If every subtask is connected, write "No split: all
    subtasks are connected" and say through which dependency.
 4. **Out of scope**: what this task deliberately does not do, including
@@ -166,13 +171,14 @@ The spec file has this structure, in this order:
 ## 3. Present and wait
 
 - The spec can't be approved while it has open questions or assumptions.
-  Once the last one is settled, show the user the spec file's path and
-  its final contents. If you suggested a
+  Once the last one is settled, tell the user. If you suggested a
   split, ask which way to go: one spec, or separate specs. On a split,
   write each group as its own spec file (same structure, its own
   dependencies, human checks and branch name) and delete the combined one.
 - Wait for approval. Questions, pushback or change requests are not
-  approval: discuss them, revise the spec file, and present it again.
+  approval: discuss them, revise the spec file, and say what changed.
 - On explicit approval, set `**Status:** approved` in each approved spec
-  file. Then stop and tell the user the command(s) to run, one per spec:
-  `/loopeng:loopeng-auto <spec file path>`.
+  file. Then stop and tell the user the commands, one per spec, and let them choose:
+  - `/loopeng:loopeng-branch <spec file path>`: one branch, no push.
+  - `/loopeng:loopeng-orchestrate <spec file path>`: plan a tree of branches,
+    then run it with `/loopeng:loopeng-stack`.
