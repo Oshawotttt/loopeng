@@ -1,7 +1,7 @@
 ---
-name: loopeng-stack
+name: stack
 description: Execute an approved spec's Branch plan on local branches, whole or for a subset of its subtasks, with no push or PR.
-argument-hint: <path to an approved spec file with a Branch plan from /loopeng:loopeng-orchestrate> [subtask IDs]
+argument-hint: <path to an approved spec file with a Branch plan from /loopeng:orchestrate> [subtask IDs]
 disable-model-invocation: true
 ---
 
@@ -12,9 +12,9 @@ Spec file, then any subtask IDs: $ARGUMENTS
 This skill owns the git hygiene and the run order. Read these files, relative
 to this skill's base directory, and follow them when a step names them:
 
-- `../../references/loopeng-run.md`
-- `../loopeng-loop/SKILL.md`
-- `../loopeng-sweep/SKILL.md`
+- `../../references/run.md`
+- `../loop/SKILL.md`
+- `../sweep/SKILL.md`
 
 A **whole run** has no subtask IDs, or names every subtask. A **subset run**
 names fewer. A subset run does not sweep: the user invokes the other subtasks
@@ -24,7 +24,7 @@ and the final sweep.
 
 1. Follow **Load the spec** and **Check the repo**.
 2. If the spec has no **Branch plan**, stop and tell the user to run
-   `/loopeng:loopeng-orchestrate <spec file>`.
+   `/loopeng:orchestrate <spec file>`.
 3. If the root branch is the default branch, stop and ask.
 4. On a subset run, check that nothing is blocked. Every blocker of a named
    subtask must be named too, or be done at the tip of the subtask's branch
@@ -78,6 +78,6 @@ sweep's report.
 subtask's objectiveness FAILs, main verifier rounds and Decisions made. Then list
 the spec's subtasks not yet done. State that no sweep ran. Give the command for
 each leaf branch, to run on that branch once its subtasks are done:
-`/loopeng:loopeng-sweep <spec file> <IDs on the leaf and the branches it is based on>`.
+`/loopeng:sweep <spec file> <IDs on the leaf and the branches it is based on>`.
 
 Remind the user that nothing was pushed.

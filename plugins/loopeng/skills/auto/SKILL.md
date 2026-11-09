@@ -1,7 +1,7 @@
 ---
-name: loopeng-auto
-description: Loop-engineering execution with auto-commit — takes an approved spec file from /loopeng:loopeng-plan, then each subtask is built test-first, independently verified (objectiveness check, then a fresh main verifier per subtask that reads the spec itself) and committed without pausing, then a final code review of the whole task, then one docs-updater agent updates the docs from the spec and the diff so the spec can be deleted without losing anything. Run only when the user invokes /loopeng:loopeng-auto.
-argument-hint: <path to an approved spec file from /loopeng:loopeng-plan>
+name: auto
+description: Loop-engineering execution with auto-commit — takes an approved spec file from /loopeng:plan, then each subtask is built test-first, independently verified (objectiveness check, then a fresh main verifier per subtask that reads the spec itself) and committed without pausing, then a final code review of the whole task, then one docs-updater agent updates the docs from the spec and the diff so the spec can be deleted without losing anything. Run only when the user invokes /loopeng:auto.
+argument-hint: <path to an approved spec file from /loopeng:plan>
 disable-model-invocation: true
 ---
 
@@ -13,9 +13,9 @@ Spec file: $ARGUMENTS
 
 - If no spec file is given, list the spec files in the repo's
   `docs/specs/` and ask which one to run. Don't plan here: if the user
-  has no spec, tell them to run `/loopeng:loopeng-plan <task>` first.
+  has no spec, tell them to run `/loopeng:plan <task>` first.
 - Read the spec file. If its status is not `**Status:** approved`, stop
-  and tell the user to approve it through `/loopeng:loopeng-plan`.
+  and tell the user to approve it through `/loopeng:plan`.
 - The spec is the source of truth. Its header names the repo and any md
   file to update. **The docs** are the repo's own context files
   (`README.md`, `CLAUDE.md`/`AGENTS.md`, `docs/*.md`, `docs/adr/`).

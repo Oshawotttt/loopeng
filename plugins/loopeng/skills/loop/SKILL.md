@@ -1,5 +1,5 @@
 ---
-name: loopeng-loop
+name: loop
 description: Build one subtask of an approved spec on the current branch, fix it until verification passes, then commit it.
 argument-hint: <path to an approved spec file> <subtask ID>
 disable-model-invocation: true
@@ -13,7 +13,7 @@ This skill covers exactly one subtask. Its caller owns iteration over subtasks.
 
 A branch skill that reads this file supplies the spec path, the subtask as the
 scope, and the base commit. Otherwise, follow **Direct invocation** in
-`../../references/loopeng-run.md`, relative to this skill's base directory. The
+`../../references/run.md`, relative to this skill's base directory. The
 subtask ID in the input is the whole scope. If the input names no subtask, stop
 and ask which one to run.
 
@@ -136,5 +136,5 @@ Limits, counted separately per subtask:
 Read by a branch skill: return to it, keeping the subtask's objectiveness FAIL
 count, main verifier rounds and Decisions made for the sweep's report. Typed by
 a human: report those, the commit made, the acceptance criteria and the
-subtasks left, tell the user that `/loopeng:loopeng-sweep` has not run, and
+subtasks left, tell the user that `/loopeng:sweep` has not run, and
 remind them that nothing was pushed.

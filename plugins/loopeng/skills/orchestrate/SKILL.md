@@ -1,7 +1,7 @@
 ---
-name: loopeng-orchestrate
+name: orchestrate
 description: Suggest how to split a spec into a tree of branches, write the Branch plan into the spec, and approve the spec once nothing blocks it.
-argument-hint: <path to a spec file from /loopeng:loopeng-plan>
+argument-hint: <path to a spec file from /loopeng:plan>
 disable-model-invocation: true
 ---
 
@@ -10,7 +10,7 @@ disable-model-invocation: true
 Spec file: $ARGUMENTS
 
 This skill only edits the spec file. It makes no commits and creates no
-branches. `/loopeng:loopeng-stack <spec file>` executes the plan it writes.
+branches. `/loopeng:stack <spec file>` executes the plan it writes.
 
 If no spec file is given, ask which one to use. Read the spec file. If its status
 is `**Status:** approved`, change it to `**Status:** draft`.
@@ -87,9 +87,9 @@ on** is `none`. Add these two lines to each subtask, after
 
 Then stop and give the user the commands to run:
 
-- Everything in sequence: `/loopeng:loopeng-stack <spec file path>`.
+- Everything in sequence: `/loopeng:stack <spec file path>`.
 - Parallel worktrees: run the root branch first, with
-  `/loopeng:loopeng-stack <spec file path> <its subtask IDs>`. If it holds
+  `/loopeng:stack <spec file path> <its subtask IDs>`. If it holds
   no subtasks, set the spec's **Base commit** to `git rev-parse HEAD` on it and
   commit the spec there instead. Once the
   subtasks on its base are done, each later branch gets its own worktree and the

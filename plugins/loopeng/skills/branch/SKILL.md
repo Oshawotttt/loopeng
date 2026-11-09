@@ -1,7 +1,7 @@
 ---
-name: loopeng-branch
+name: branch
 description: Execute an approved spec on one feature branch, with no push or PR.
-argument-hint: <path to an approved spec file from /loopeng:loopeng-plan>
+argument-hint: <path to an approved spec file from /loopeng:plan>
 disable-model-invocation: true
 ---
 
@@ -12,9 +12,9 @@ Spec file: $ARGUMENTS
 This skill owns the git hygiene and the run order. Read these files, relative
 to this skill's base directory, and follow them when a step names them:
 
-- `../../references/loopeng-run.md`
-- `../loopeng-loop/SKILL.md`
-- `../loopeng-sweep/SKILL.md`
+- `../../references/run.md`
+- `../loop/SKILL.md`
+- `../sweep/SKILL.md`
 
 ## 1. Prepare
 

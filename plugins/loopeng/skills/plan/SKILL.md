@@ -1,5 +1,5 @@
 ---
-name: loopeng-plan
+name: plan
 description: Discovery and planning for loop engineering — reads the repo's docs and code, asks until it has enough, then writes an approved spec file in the repo.
 argument-hint: <task + any context, free text; name an md file to update if you want one>
 disable-model-invocation: true
@@ -11,8 +11,8 @@ Task: $ARGUMENTS
 
 This skill only plans. It writes code nowhere, makes no commits, creates no
 branches and runs no other git writes. The spec it produces is executed
-later by `/loopeng:loopeng-branch <spec file>` or
-`/loopeng:loopeng-stack <spec file>`.
+later by `/loopeng:branch <spec file>` or
+`/loopeng:stack <spec file>`.
 
 **The repo** is the git repository the task is in: the current working
 directory's repo, unless the task names another. If that is unclear, ask
@@ -179,6 +179,6 @@ The spec file has this structure, in this order:
   approval: discuss them, revise the spec file, and say what changed.
 - On explicit approval, set `**Status:** approved` in each approved spec
   file. Then stop and tell the user the commands, one per spec, and let them choose:
-  - `/loopeng:loopeng-branch <spec file path>`: one branch, no push.
-  - `/loopeng:loopeng-orchestrate <spec file path>`: plan a tree of branches,
-    then run it with `/loopeng:loopeng-stack`.
+  - `/loopeng:branch <spec file path>`: one branch, no push.
+  - `/loopeng:orchestrate <spec file path>`: plan a tree of branches,
+    then run it with `/loopeng:stack`.

@@ -1,5 +1,5 @@
 ---
-name: loopeng-sweep
+name: sweep
 description: Run the final code review, docs update and report for an approved spec's committed subtasks.
 argument-hint: <path to an approved spec file>
 disable-model-invocation: true
@@ -11,7 +11,7 @@ Input when typed by a human: $ARGUMENTS
 
 A branch skill that reads this file supplies the spec path, scope and base
 commit. Otherwise, follow **Direct invocation** in
-`../../references/loopeng-run.md`, relative to this skill's base directory.
+`../../references/run.md`, relative to this skill's base directory.
 
 If a subtask in scope is not done, stop and list it.
 
@@ -32,7 +32,7 @@ Act on the findings:
   to the user with evidence.
 
 Fixes go through the normal loop: follow the Verify and Commit steps in
-`../loopeng-loop/SKILL.md` (a fresh main verifier, objectiveness check
+`../loop/SKILL.md` (a fresh main verifier, objectiveness check
 first), as new commits. A fix that makes a design decision the spec didn't
 dictate adds it to the spec's doc deltas. Their messages weren't in the approved
 spec, so show them in the report.

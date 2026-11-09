@@ -4,7 +4,7 @@ Shared by the loopeng execution skills. Skills name the sections they need.
 
 ## Terms
 
-- **The spec**: the approved spec file from `/loopeng:loopeng-plan`, and
+- **The spec**: the approved spec file from `/loopeng:plan`, and
   the source of truth for the run. Its header names the repo and any md file
   to update.
 - **The docs**: the repo's own context files (`README.md`,

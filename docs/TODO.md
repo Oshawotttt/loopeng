@@ -11,6 +11,5 @@
 - [ ] Rename skills to make naming consistent.
 - [ ] Add a README that describes and justifies the process.
 - [x] Seperate the main execution loop from final sweep, then add a skill to execute one subtask
-- [x] Turn `loopeng-group` into `loopeng-orchestrate`. It also discusses how to split subtasks for execution on separate worktrees.
 - [ ] Remove dependencies on Matt Pocock skills
 - [ ] Change DECISION.md to ADRs
