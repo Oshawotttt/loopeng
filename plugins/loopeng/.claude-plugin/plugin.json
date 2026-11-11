@@ -1,0 +1,6 @@
+{
+  "name": "loopeng",
+  "version": "2.0.0",
+  "description": "Loop engineering workflow: spec, build, verify, review, docs",
+  "author": { "name": "Oshawotttt" }
+}

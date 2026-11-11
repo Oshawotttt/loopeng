@@ -1,0 +1,7 @@
+{
+  "name": "loopeng",
+  "owner": { "name": "Oshawotttt" },
+  "plugins": [
+    { "name": "loopeng", "source": "./plugins/loopeng", "description": "Loop engineering workflow" }
+  ]
+}
