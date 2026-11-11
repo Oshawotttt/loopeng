@@ -33,8 +33,6 @@ and name the ADR.
   `git log --oneline -10` for commit style and scopes).
   - Choose the spec's branch: the current feature branch, or on
     `main`/`master` a proposed feature branch name.
-  - List any uncommitted changes that aren't part of this task. They must
-    not end up in any commit.
 - If something the spec depends on is unclear (behaviour, scope, an
   interface, a choice between approaches) and the code and docs don't
   settle it, it is an open question. Don't ask what you can look up.
@@ -82,8 +80,7 @@ deltas**). Mark anything that matters only during the run `transient`
 where it is written.
 
 Split the task into subtasks. Each one should be small enough to verify on
-its own, but still a meaningful unit of work (no "add import" steps). Each
-subtask becomes one commit.
+its own, but still a meaningful unit of work (no "add import" steps).
 
 Prefactor first: if the existing code makes the change awkward (logic
 duplicated in several places, a tangled function the change must go
@@ -93,8 +90,7 @@ criteria are that the existing tests still pass unchanged, plus any test
 it adds for the new structure. Don't mix restructuring into a feature
 subtask.
 
-Give each an ID (`S1`, `S2`, ...) for use in
-the spec only; IDs never appear in commits.
+Give each an ID (`S1`, `S2`, ...).
 
 The spec file has this structure, in this order:
 
@@ -110,7 +106,6 @@ The spec file has this structure, in this order:
    - External blockers: open questions, decisions the user must make,
      missing access, services or data, other people's work. Write "none"
      if there are none.
-   - Uncommitted changes that must stay out of the commits.
 2. **Open questions** (while drafting only): every `OPEN Qn` and
    `ASSUMED` point, numbered, with the subtasks it affects. Delete the
    section once it is empty.

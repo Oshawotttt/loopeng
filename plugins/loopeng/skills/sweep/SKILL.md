@@ -31,11 +31,15 @@ Act on the findings:
 - If you're certain a Spec finding is not a bug, don't drop it. Stop and flag it
   to the user with evidence.
 
-Fixes go through the normal loop: follow the Verify and Commit steps in
-`../verification-loop/SKILL.md` (a fresh main verifier, objectiveness check
-first), as new commits. A fix that makes a design decision the spec didn't
-dictate adds it to the spec's doc deltas. Their messages weren't in the approved
-spec, so show them in the report.
+Fixes reuse step 3 and **Commit rules** of `../verification-loop/SKILL.md`,
+treating each fix round like a subtask:
+- Note `HEAD` as the fix round start. Commit fixes as you go.
+- Verify with a fresh main verifier per fix round. In the prompt template, the
+  first line is `Verify the code-review fixes. Spec: <path>.`, there is no Goal
+  line, and the changes are `<fix round start>..HEAD` plus the working tree.
+- Its limits count per fix round.
+- A fix that makes a design decision the spec didn't dictate adds it to the
+  spec's doc deltas; commit the spec after PASS.
 
 Run the code review again from the top of this step, still against the base
 commit, only if the round just finished had at least one Spec defect. If it had
@@ -59,7 +63,7 @@ the run must end up in the docs, code or tests.
 - If the table's **Files changed** lists a `(new)` file, follow
   `../generate-map/SKILL.md`, relative to this skill's base directory, steps
   1-4, to add it to the docs map in `CLAUDE.md`.
-- Commit the changed doc files (Commit step rules) in one commit. If nothing
+- Commit the changed doc files (**Commit rules** in `../verification-loop/SKILL.md`) in one commit. If nothing
   changed, make no commit.
 - Items the table lists as not placed go in the report, with its reason.
 
@@ -72,13 +76,13 @@ approved spec already says. Limit the report to the scope.
 
 - **Not in the approved spec**: find it with `git diff <commit that added the
   spec>..HEAD -- <spec path>`, ignoring ticked checkboxes and **Sweeps**
-  entries, and with the commit log. Grouped by subtask:
+  entries. Grouped by subtask:
   - **New decisions**: each design decision the spec didn't dictate, why it
     was made, and where it was recorded (from the coverage table).
   - **Spec changes**: each edit to the approved text (e.g. **Files**,
     **Seams**, acceptance criteria), before and after.
-  - **Extra commits**: commits whose message wasn't in the spec (e.g.
-    code-review fixes), hash + message.
+  - **Standards fixes**: each change made for a Standards finding, with
+    its commit hash.
   Write "none" if there is nothing.
 - **Left undone**: anything in the approved spec that isn't done, such as a
   doc delta the docs-updater couldn't place, plus Standards findings not

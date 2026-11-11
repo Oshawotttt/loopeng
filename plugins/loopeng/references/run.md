@@ -25,8 +25,8 @@ Shared by the loopeng execution skills. Skills name the sections they need.
 
 ## Check the repo
 
-- Check `git status` and the current branch. If uncommitted changes exist
-  that the spec doesn't list (other than the spec file), stop and ask.
+- Run `git status`. If anything other than the spec file is changed, staged
+  or untracked, stop and tell the user to commit or stash it first.
 - If any external blocker in the spec is still open, stop and ask.
 
 ## Commit the spec

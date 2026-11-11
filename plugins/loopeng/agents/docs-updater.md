@@ -35,7 +35,7 @@ those subtasks.
 
 - From the spec, every item not marked `transient`: Decisions, Interfaces,
   Out of scope items, and every subtask's Doc deltas (these include the
-  Decisions made while building, with their reasons).
+  decisions made while building, with their reasons).
 - From the diff, every new or changed module, data flow, public
   interface, data shape or term that neither the docs nor the spec's
   items already cover.

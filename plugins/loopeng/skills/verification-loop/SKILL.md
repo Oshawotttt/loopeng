@@ -1,6 +1,6 @@
 ---
 name: verification-loop
-description: Build one subtask of an approved spec on the current branch, fix it until verification passes, then commit it.
+description: Build one subtask of an approved spec on the current branch with atomic commits, fix it until verification passes, then mark it done.
 argument-hint: <path to an approved spec file> <subtask ID>
 disable-model-invocation: true
 ---
@@ -20,8 +20,7 @@ and ask which one to run.
 Agents used:
 - `objectiveness-verifier`: a fresh one checks every verification prompt is
   objective before it is sent on.
-- `main-verifier`: a fresh one for each subtask and for each code-review fix
-  round. It reads the spec itself.
+- `main-verifier`: a fresh one for each subtask. It reads the spec itself.
 
 ## 1. Check the subtask
 
@@ -32,6 +31,9 @@ not done, stop and say so. Otherwise run steps 2-4.
 
 - Work on this subtask only: code + tests, then step 3, then step 4. Docs are
   updated once, by the sweep.
+- Note `HEAD` before you start: the **subtask start**.
+- Commit as you go, following **Commit rules**: each time a logical change is
+  done and the tests pass, commit it. Keep the spec file out of these commits.
 - Build test-first: call the Skill tool with "mattpocock-skills:tdd". Test only
   at the subtask's seams. Every acceptance criterion needs a test (or command)
   that proves it.
@@ -48,11 +50,10 @@ not done, stop and say so. Otherwise run steps 2-4.
   database lock, a "database already exists" error, a locked temp file), wait
   briefly and rerun. Don't change code to work around it. If it keeps failing,
   stop and flag it to the user.
-- Keep a **Decisions made** list: every design decision the spec didn't
-  dictate, one line each, the decision and why. Before committing, add each one
-  to the subtask's **Doc deltas** in the spec file (or note there why it needs
-  no doc). The diff shows what changed, not why, so this is the only record of
-  the reason.
+- Before verification, add every design decision the spec didn't dictate to
+  the subtask's **Doc deltas** in the spec file, one line each with why (or
+  note there why it needs no doc). The diff shows what changed, not why, so
+  this is the only record of the reason, and the sweep's report reads it.
 - Before verification, tick each acceptance criterion in the spec file that its
   test now proves. Every criterion must be ticked before verification. If one
   can't be proved by a test or command, stop and flag it to the user.
@@ -71,10 +72,8 @@ Every verification prompt goes through two agents, in order:
 2. **`main-verifier`** (`subagent_type: "loopeng:main-verifier"`).
    - Spawn a new one for the subtask's first verification round, and keep its
      agent ID.
-   - Re-verification after a FAIL, of the same subtask or the same code-review
-     fix round: continue that agent with `SendMessage`, so it re-checks its own
-     findings.
-   - Spawn a fresh one for each code-review fix round.
+   - Re-verification after a FAIL: continue that agent with `SendMessage`, so
+     it re-checks its own findings.
    - Pass no summary of earlier subtasks.
 
 Every verification prompt uses this template. Fill in the blanks and add
@@ -83,7 +82,7 @@ nothing else:
 ```
 Verify subtask <ID> — <title exactly as in spec>. Spec: `<spec path>`.
 
-Repo: `<repo path>` (branch `<branch>`; base commit `<sha>`; HEAD `<sha>`; changes are uncommitted in the working tree).
+Repo: `<repo path>` (branch `<branch>`; base commit `<sha>`; HEAD `<sha>`; changes are `<subtask start>..HEAD` plus the working tree).
 
 Goal: <goal verbatim>
 
@@ -99,9 +98,6 @@ Return a verdict.
 
 - Use the same template for re-verification. Never write "again", "round 2",
   what was fixed, or why.
-- Code-review fix round: the first line is
-  `Verify the uncommitted working-tree changes. Spec: <path>.`, with no Goal
-  line. Everything else is the same.
 - An environment workaround goes in as the command itself (e.g.
   `python -m jupyter` instead of `jupyter`), never as a note explaining it.
 - **Never include your reasoning, justifications, confidence, or "I think this
@@ -110,34 +106,37 @@ Return a verdict.
 
 Main verifier verdicts:
 - **PASS**: go to step 4.
-- **FAIL**: apply the listed fixes, then re-verify (objectiveness check first,
-  then that subtask's main verifier via `SendMessage`).
+- **FAIL**: apply the listed fixes as new commits, then re-verify
+  (objectiveness check first, then that subtask's main verifier via
+  `SendMessage`).
 - If you're certain a FAIL finding is not a bug, don't override the verifier.
-  Stop and flag it to the user with evidence. Nothing gets committed until it's
+  Stop and flag it to the user with evidence. Make no more commits until it's
   resolved.
 
-Limits, counted separately per subtask and per code-review fix round:
+Limits, per subtask:
 - **3 objectiveness FAILs**: stop and flag it to the user with the latest
   objectiveness output. Don't send a 4th prompt.
 - **3 main-verifier FAILs**: stop and flag it to the user with the main
-  verifier's latest output. Don't run a 4th round and don't commit it.
+  verifier's latest output. Don't run a 4th round and don't mark it done.
 
-## 4. Commit (only after PASS)
+## 4. Mark done (only after PASS)
 
-- Stage **only** the files this subtask changed (code, tests) plus the spec
-  file (its ticked criteria and doc deltas), by explicit path. Never use
-  `git add -A` or `git add .`. Check with `git status` /
-  `git diff --cached --stat` that nothing unrelated is staged.
-- Write every commit message by calling the Skill tool with
-  "loopeng:commit-message".
-- Never use `--no-verify` or `--amend`, and never push. If a pre-commit hook
-  fails, fix the cause, re-stage and make a new commit. If the fix touches
-  code, re-verify first.
-- Report the commit hash and message in one line.
+Commit any changes left in the working tree, then commit the spec file alone
+(its ticked criteria and doc deltas) with
+`docs(specs): complete <subtask title in lowercase>`. The subtask counts as
+done only from this commit. Report each commit since the subtask start, hash
+and message, one line each.
+
+### Commit rules
+
+- One logical change per commit, with its tests, leaving the tests passing.
+- Stage everything except the spec file: `git add -A -- . ':!<spec path>'`.
+- Message: call the Skill tool with "loopeng:commit-message".
+- Never use `--no-verify` or `--amend`. If a pre-commit hook fails, fix the
+  cause and make a new commit.
 
 ## 5. Finish
 
-Read by `execute`: continue with its next step, keeping the Decisions made for
-the sweep's report. Typed by a human: report the commit made, the Decisions
-made and any spec changes, and the subtasks left, and tell the user that
-`/loopeng:sweep` has not run.
+Read by `execute`: continue with its next step. Typed by a human: report the
+commits made, the new decisions and spec changes, and the subtasks left, and
+tell the user that `/loopeng:sweep` has not run.
