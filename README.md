@@ -56,5 +56,5 @@ Only a person or `/loopeng:execute` runs these. They set `disable-model-invocati
 | `plugins/loopeng/skills/generate-map` | Docs map in `CLAUDE.md` |
 | `plugins/loopeng/skills/generate-summary` | Visual summary from the docs |
 | `plugins/loopeng/agents/objectiveness-verifier.md` | Checks each verification prompt is objective |
-| `plugins/loopeng/agents/main-verifier.md` | Verifies one subtask or code-review fix round |
+| `plugins/loopeng/agents/main-verifier.md` | Verifies a run's subtasks (one agent per run) or a code-review fix round |
 | `plugins/loopeng/agents/docs-updater.md` | Updates docs from the spec and the diff |

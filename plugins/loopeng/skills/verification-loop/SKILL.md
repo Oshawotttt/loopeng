@@ -20,7 +20,8 @@ and ask which one to run.
 Agents used:
 - `objectiveness-verifier`: a fresh one checks every verification prompt is
   objective before it is sent on.
-- `main-verifier`: a fresh one for each subtask. It reads the spec itself.
+- `main-verifier`: one per run, shared by every subtask in it. It reads the
+  spec itself.
 
 ## 1. Check the subtask
 
@@ -70,10 +71,12 @@ Every verification prompt goes through two agents, in order:
      objectiveness verifier. Nothing goes to the main verifier.
    - **PASS**: send that exact prompt, unchanged, to the main verifier.
 2. **`main-verifier`** (`subagent_type: "loopeng:main-verifier"`).
-   - Spawn a new one for the subtask's first verification round, and keep its
-     agent ID.
-   - Re-verification after a FAIL: continue that agent with `SendMessage`, so
-     it re-checks its own findings.
+   - If the caller supplied a main verifier agent ID, continue that agent with
+     `SendMessage` for every round, including this subtask's first.
+   - Otherwise spawn a new one for the first round and keep its agent ID. Use
+     `SendMessage` to that agent for every later round.
+   - Re-verification after a FAIL goes to the same agent, so it re-checks its
+     own findings.
    - Pass no summary of earlier subtasks.
 
 Every verification prompt uses this template. Fill in the blanks and add
@@ -107,7 +110,7 @@ Return a verdict.
 Main verifier verdicts:
 - **PASS**: go to step 4.
 - **FAIL**: apply the listed fixes as new commits, then re-verify
-  (objectiveness check first, then that subtask's main verifier via
+  (objectiveness check first, then the same main verifier via
   `SendMessage`).
 - If you're certain a FAIL finding is not a bug, don't override the verifier.
   Stop and flag it to the user with evidence. Make no more commits until it's
@@ -137,6 +140,7 @@ and message, one line each.
 
 ## 5. Finish
 
-Read by `execute`: continue with its next step. Typed by a human: report the
+Read by `execute`: hand the main verifier's agent ID back to `execute`, then
+continue with its next step. Typed by a human: report the
 commits made, the new decisions and spec changes, and the subtasks left, and
 tell the user that `/loopeng:sweep` has not run.

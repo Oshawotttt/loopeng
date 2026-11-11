@@ -35,6 +35,10 @@ to this skill's base directory, and follow them when a step names them:
 Track the subtasks in scope in the task list, in run order. Mark done subtasks
 complete. Run them yourself, serially, in this session.
 
+**Run verifier**: the run uses one main verifier for every subtask, across all
+branches. The first verification loop spawns it. Keep its agent ID and pass
+it to every later verification loop. Never pass it to the sweep.
+
 A **Sweeps** entry counts only if its **end** commit is an ancestor of `HEAD`
 (entries from sibling branches don't).
 
@@ -52,7 +56,8 @@ For each branch in the Branch plan, in order:
    `git merge-base HEAD <based on>`.
 4. For each subtask on this branch, by **Order on branch**, skip it if it is
    done. Otherwise run the verification-loop skill with the spec path, that subtask as the
-   scope, and the base commit. Skip its direct-invocation steps.
+   scope, the base commit and the run verifier's agent ID (if one exists yet).
+   Skip its direct-invocation steps.
 5. Continue to the next branch without pausing.
 
 ### Subset run
@@ -60,7 +65,8 @@ For each branch in the Branch plan, in order:
 1. Follow **Commit the spec**.
 2. For each subtask in scope, in the spec's run order, skip it if it is done.
    Otherwise run the verification-loop skill with the spec path, that subtask as the scope,
-   and the run base. Skip its direct-invocation steps.
+   the run base and the run verifier's agent ID (if one exists yet). Skip its
+   direct-invocation steps.
 
 If a verification loop stops, the run stops with it.
 
