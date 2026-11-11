@@ -31,7 +31,8 @@ Install the plugins it depends on. These are not included:
 2. `/loopeng:plan <task>`: write and approve a spec in `docs/specs/`.
 3. Optional: `/loopeng:orchestrate <spec file>`: split the spec's Branch plan into a chain of local branches, each based on the one before. It suggests a grouping, and you approve it. By default the plan is one branch. For parallel branches, split the spec instead: one spec per branch.
 4. `/loopeng:execute <spec file>`: run the Branch plan. It builds, verifies and commits each subtask, reviews the work, then updates the docs. No push.
-5. `/loopeng:generate-summary`: build or update `docs/summary.html`, a visual summary for people. It needs `docs/ARCHITECTURE.md`, and stops if it is missing.
+5. Optional: `/loopeng:pr-commands <spec file>`: write the `git push` and `gh pr create` commands for each branch in the Branch plan into the spec, as stacked PRs. It runs nothing.
+6. `/loopeng:generate-summary`: build or update `docs/summary.html`, a visual summary for people. It needs `docs/ARCHITECTURE.md`, and stops if it is missing.
 
 To step through a run by hand on a feature branch, use the parts directly:
 
@@ -49,6 +50,7 @@ Only a person or `/loopeng:execute` runs these. They set `disable-model-invocati
 | `plugins/loopeng/skills/execute` | Runs the Branch plan: one branch or a chain, no push |
 | `plugins/loopeng/skills/verification-loop` | Feedback loop for one subtask: build, verify, fix until it passes, commit |
 | `plugins/loopeng/skills/sweep` | Final code review, docs update and report |
+| `plugins/loopeng/skills/pr-commands` | Writes push and `gh pr create` commands for the Branch plan into the spec |
 | `plugins/loopeng/references/run.md` | Run terms and checks shared by the execution skills |
 | `plugins/loopeng/skills/commit-message` | Commit message style, called by the execution skills |
 | `plugins/loopeng/skills/generate-map` | Docs map in `CLAUDE.md` |
