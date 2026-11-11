@@ -10,7 +10,7 @@ disable-model-invocation: true
 Spec file: $ARGUMENTS
 
 This skill only edits the spec file. It makes no commits and creates no
-branches. `/loopeng:stack <spec file>` executes the plan it writes.
+branches. `/loopeng:execute <spec file>` executes the plan it writes.
 
 If no spec file is given, ask which one to use. Read the spec file. If its status
 is `**Status:** approved`, change it to `**Status:** draft`.
@@ -37,8 +37,8 @@ A prefactor gets its own branch.
 
 Branches never run in parallel. If the user wants independent groups of
 subtasks on parallel branches, tell them to use subset runs instead and stop:
-`/loopeng:stack <spec> <trunk IDs> --sweep` on a feature branch, then
-`/loopeng:stack <spec> <group IDs> --sweep` in its own worktree per group,
+`/loopeng:execute <spec> <trunk IDs> --sweep` on a feature branch, then
+`/loopeng:execute <spec> <group IDs> --sweep` in its own worktree per group,
 branched from the trunk.
 
 ## 2. Write the plan
@@ -80,4 +80,4 @@ subtask, after **Blocked by**:
   discuss them, revise the spec file, and say what changed.
 - On explicit approval, set `**Status:** approved`.
 
-Then stop and give the user the command to run: `/loopeng:stack <spec file path>`.
+Then stop and give the user the command to run: `/loopeng:execute <spec file path>`.

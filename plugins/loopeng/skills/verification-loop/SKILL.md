@@ -1,5 +1,5 @@
 ---
-name: loop
+name: verification-loop
 description: Build one subtask of an approved spec on the current branch, fix it until verification passes, then commit it.
 argument-hint: <path to an approved spec file> <subtask ID>
 disable-model-invocation: true
@@ -11,7 +11,7 @@ Input when typed by a human: $ARGUMENTS
 
 This skill covers exactly one subtask. Its caller owns iteration over subtasks.
 
-When `stack` reads this file, it supplies the spec path, the subtask as the
+When `execute` reads this file, it supplies the spec path, the subtask as the
 scope, and the base commit. Otherwise, follow **Direct invocation** in
 `../../references/run.md`, relative to this skill's base directory. The
 subtask ID in the input is the whole scope. If the input names no subtask, stop
@@ -137,7 +137,7 @@ Limits, counted separately per subtask and per code-review fix round:
 
 ## 5. Finish
 
-Read by `stack`: return to it, keeping the subtask's objectiveness FAIL
+Read by `execute`: return to it, keeping the subtask's objectiveness FAIL
 count, main verifier rounds and Decisions made for the sweep's report. Typed by
 a human: report those, the commit made, the acceptance criteria and the
 subtasks left, tell the user that `/loopeng:sweep` has not run, and

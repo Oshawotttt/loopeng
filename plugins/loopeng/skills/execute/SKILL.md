@@ -1,5 +1,5 @@
 ---
-name: stack
+name: execute
 description: Execute an approved spec's Branch plan as a chain of local branches, or a named subset of its subtasks on the current branch, with no push or PR.
 argument-hint: <path to an approved spec file> [subtask IDs] [--sweep]
 disable-model-invocation: true
@@ -13,7 +13,7 @@ This skill owns the git hygiene and the run order. Read these files, relative
 to this skill's base directory, and follow them when a step names them:
 
 - `../../references/run.md`
-- `../loop/SKILL.md`
+- `../verification-loop/SKILL.md`
 - `../sweep/SKILL.md`
 
 ## 1. Prepare
@@ -51,7 +51,7 @@ For each branch in the Branch plan, in order:
 3. Set the base commit: the run base on the first branch, otherwise
    `git merge-base HEAD <based on>`.
 4. For each subtask on this branch, by **Order on branch**, skip it if it is
-   done. Otherwise run the loop skill with the spec path, that subtask as the
+   done. Otherwise run the verification-loop skill with the spec path, that subtask as the
    scope, and the base commit. Skip its direct-invocation steps.
 5. Continue to the next branch without pausing.
 
@@ -59,10 +59,10 @@ For each branch in the Branch plan, in order:
 
 1. Follow **Commit the spec**.
 2. For each subtask in scope, in the spec's run order, skip it if it is done.
-   Otherwise run the loop skill with the spec path, that subtask as the scope,
+   Otherwise run the verification-loop skill with the spec path, that subtask as the scope,
    and the run base. Skip its direct-invocation steps.
 
-If a loop stops, the run stops with it.
+If a verification loop stops, the run stops with it.
 
 ## 3. Sweep
 

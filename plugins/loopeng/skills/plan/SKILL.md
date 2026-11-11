@@ -11,7 +11,7 @@ Task: $ARGUMENTS
 
 This skill only plans. It writes code nowhere, makes no commits, creates no
 branches and runs no other git writes. The spec it produces is executed
-later by `/loopeng:stack <spec file>`.
+later by `/loopeng:execute <spec file>`.
 
 **The repo** is the git repository the task is in: the current working
 directory's repo, unless the task names another. If that is unclear, ask
@@ -67,7 +67,7 @@ Once the task can be split into subtasks, write the spec **in the repo**:
 `docs/specs/<YYYY-MM-DD>-<task-slug>.md`, where `<task-slug>` is the task
 title in lowercase kebab-case (e.g. `add-csv-export`). If the repo already
 keeps specs somewhere else, use that folder instead. Don't stage or commit
-it: `/loopeng:stack` commits it when it runs the spec.
+it: `/loopeng:execute` commits it when it runs the spec.
 
 The spec is the source of truth for the whole run: the verifiers and the
 final review read it. Write only facts and decisions in it, no persuasion
@@ -188,9 +188,9 @@ The spec file has this structure, in this order:
   approval: discuss them, revise the spec file, and say what changed.
 - On explicit approval, set `**Status:** approved` in the spec file. Then
   stop and tell the user the commands:
-  - `/loopeng:stack <spec file path>`: run it on one branch, no push.
+  - `/loopeng:execute <spec file path>`: run it on one branch, no push.
   - To split it into a chain of branches first:
-    `/loopeng:orchestrate <spec file path>`, then `/loopeng:stack`.
+    `/loopeng:orchestrate <spec file path>`, then `/loopeng:execute`.
   - To run only some subtasks on the current branch (e.g. a shared trunk,
     then each leaf in its own worktree):
-    `/loopeng:stack <spec file path> <subtask IDs> [--sweep]`.
+    `/loopeng:execute <spec file path> <subtask IDs> [--sweep]`.

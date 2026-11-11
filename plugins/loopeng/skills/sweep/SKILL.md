@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Input when typed by a human: $ARGUMENTS
 
-When `stack` reads this file, it supplies the spec path, scope and base
+When `execute` reads this file, it supplies the spec path, scope and base
 commit. Otherwise, follow **Direct invocation** in
 `../../references/run.md`, relative to this skill's base directory.
 
@@ -32,7 +32,7 @@ Act on the findings:
   to the user with evidence.
 
 Fixes go through the normal loop: follow the Verify and Commit steps in
-`../loop/SKILL.md` (a fresh main verifier, objectiveness check
+`../verification-loop/SKILL.md` (a fresh main verifier, objectiveness check
 first), as new commits. A fix that makes a design decision the spec didn't
 dictate adds it to the spec's doc deltas. Their messages weren't in the approved
 spec, so show them in the report.
@@ -81,5 +81,5 @@ Limit the report to the scope. Mark any count this session didn't observe as
 - **Human checks**: end the report with the full checklist from the spec, ready
   for the user to run, with steps and expected results.
 
-Read by `stack`: return to it. Typed by a human: remind them that nothing
+Read by `execute`: return to it. Typed by a human: remind them that nothing
 was pushed.
