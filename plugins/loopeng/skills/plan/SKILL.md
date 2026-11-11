@@ -11,8 +11,7 @@ Task: $ARGUMENTS
 
 This skill only plans. It writes code nowhere, makes no commits, creates no
 branches and runs no other git writes. The spec it produces is executed
-later by `/loopeng:branch <spec file>` or
-`/loopeng:stack <spec file>`.
+later by `/loopeng:stack <spec file>`.
 
 **The repo** is the git repository the task is in: the current working
 directory's repo, unless the task names another. If that is unclear, ask
@@ -68,7 +67,7 @@ Once the task can be split into subtasks, write the spec **in the repo**:
 `docs/specs/<YYYY-MM-DD>-<task-slug>.md`, where `<task-slug>` is the task
 title in lowercase kebab-case (e.g. `add-csv-export`). If the repo already
 keeps specs somewhere else, use that folder instead. Don't stage or commit
-it: the branch skill that runs the spec commits it.
+it: `/loopeng:stack` commits it when it runs the spec.
 
 The spec is the source of truth for the whole run: the verifiers and the
 final review read it. Write only facts and decisions in it, no persuasion
@@ -111,18 +110,26 @@ The spec file has this structure, in this order:
    - External blockers: open questions, decisions the user must make,
      missing access, services or data, other people's work. Write "none"
      if there are none.
-   - Uncommitted changes that must stay out of the commits, and the
-     branch name.
+   - Uncommitted changes that must stay out of the commits.
 2. **Open questions** (while drafting only): every `OPEN Qn` and
    `ASSUMED` point, numbered, with the subtasks it affects. Delete the
    section once it is empty.
-3. **Suggested splits**: group the subtasks by dependency. If two or more
-   groups have no dependency between them (no subtask in one group is
-   blocked by a subtask in another, and they don't change the same
-   files), suggest splitting them into separate specs, one per group, each
-   run on its own branch. Name the groups and
-   their subtasks. If every subtask is connected, write "No split: all
-   subtasks are connected" and say through which dependency.
+3. **Branch plan**: by default, one branch holding every subtask.
+   `/loopeng:orchestrate` can later split it into a chain of branches.
+
+   ```
+   ## Branch plan
+
+   Starting branch: `<current branch>`
+
+   | Order | Branch | Based on | Subtasks |
+   |---|---|---|---|
+   | 1 | `<branch>` | `<starting branch, or none>` | <every ID, in run order> |
+   ```
+
+   The branch is the one chosen in discovery. On a feature branch it is
+   the starting branch itself, with **Based on** `none`. On the default
+   branch it is the proposed feature branch, based on the starting branch.
 4. **Out of scope**: what this task deliberately does not do, including
    anything the user ruled out. Write "none" if there is nothing. For
    each item, name the subtask whose doc delta records it, or mark it
@@ -137,9 +144,14 @@ The spec file has this structure, in this order:
 6. **Subtasks**, each with:
    - **Goal**: what will be true when it's done.
    - **Blocked by**: subtask IDs, or "none" (same as section 1).
+   - **Branch**: `<branch>` (from the Branch plan).
+   - **Order on branch**: its position in the run order.
    - **Files**: the files expected to change.
    - **Seams**: the interfaces the tests go through (public functions,
-     endpoints, CLI commands). Tests use only these, never internals.
+     endpoints, CLI commands), as few as cover the critical paths. Tests
+     use only these, never internals. One bullet per seam with a short
+     note on what testing there catches and what it misses, e.g.
+     `` - `exportCsv(rows, opts)`: catches column order, escaping; misses download headers ``.
    - **Decisions**: every decision from discovery that this subtask must
      follow, each with who settled it (`user`, `docs: <file>` or
      `code: <file>`). A decision that affects several subtasks goes in
@@ -171,14 +183,14 @@ The spec file has this structure, in this order:
 ## 3. Present and wait
 
 - The spec can't be approved while it has open questions or assumptions.
-  Once the last one is settled, tell the user. If you suggested a
-  split, ask which way to go: one spec, or separate specs. On a split,
-  write each group as its own spec file (same structure, its own
-  dependencies, human checks and branch name) and delete the combined one.
+  Once the last one is settled, tell the user.
 - Wait for approval. Questions, pushback or change requests are not
   approval: discuss them, revise the spec file, and say what changed.
-- On explicit approval, set `**Status:** approved` in each approved spec
-  file. Then stop and tell the user the commands, one per spec, and let them choose:
-  - `/loopeng:branch <spec file path>`: one branch, no push.
-  - `/loopeng:orchestrate <spec file path>`: plan a tree of branches,
-    then run it with `/loopeng:stack`.
+- On explicit approval, set `**Status:** approved` in the spec file. Then
+  stop and tell the user the commands:
+  - `/loopeng:stack <spec file path>`: run it on one branch, no push.
+  - To split it into a chain of branches first:
+    `/loopeng:orchestrate <spec file path>`, then `/loopeng:stack`.
+  - To run only some subtasks on the current branch (e.g. a shared trunk,
+    then each leaf in its own worktree):
+    `/loopeng:stack <spec file path> <subtask IDs> [--sweep]`.

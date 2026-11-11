@@ -16,7 +16,7 @@ read-only (`diff`, `log`, `show`); never stage, commit or change branches.
 
 ## Input
 
-The repo path, the spec file path, the base commit, the doc paths, an md
+The repo path, the spec file path, the base commit, an md
 file to update if the spec names one, and subtask IDs if the run covers
 only part of the spec. With subtask IDs, list only the items that belong to
 those subtasks.

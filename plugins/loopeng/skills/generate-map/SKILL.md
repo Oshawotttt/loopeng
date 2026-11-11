@@ -72,7 +72,7 @@ Read a doc only when its row matches the task.
   - **Map markers exist**: replace everything between them. Keep any row
     the user added by hand whose doc still exists; drop rows for docs
     that are gone.
-  - **A section already lists or points to docs** Fold its existing pointers into
+  - **A section already lists or points to docs**: fold its existing pointers into
     the rows; keep any instruction in it that isn't a doc pointer.
   - **No map and no such section**: place the map where it fits the
     file's structure, normally right after the project overview near the
@@ -86,4 +86,4 @@ Read a doc only when its row matches the task.
 ## 5. Finish
 
 - Don't commit and don't stage.
-- Report in a one line.
+- Report in one line.

@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: Suggest how to split a spec into a tree of branches, write the Branch plan into the spec, and approve the spec once nothing blocks it.
+description: Suggest how to split a spec into a chain of branches, write the Branch plan into the spec, and approve the spec once nothing blocks it.
 argument-hint: <path to a spec file from /loopeng:plan>
 disable-model-invocation: true
 ---
@@ -17,54 +17,49 @@ is `**Status:** approved`, change it to `**Status:** draft`.
 
 ## 1. Suggest
 
-Use each subtask's **Blocked by** to shape the branches. They form a tree: each
-branch is based on one other branch, up to one root branch. The root is a new
-branch based on the starting branch, or the starting branch itself unless that
-is the default branch. The starting branch is the current branch, unless the
-user names another.
+The branches form a chain: each branch is based on the one before it. The first
+branch is a new branch based on the starting branch, or the starting branch
+itself unless that is the default branch. The starting branch is the current
+branch, unless the user names another.
 
-If the subtasks would need several roots, make the starting branch the root. If
-it is the default branch, chain them, or tell the user to split the spec as its
-**Suggested splits** describes.
-
-By default, each subtask gets its own branch. Suggest putting subtasks on one
-branch only when a branch's tip wouldn't pass the full test suite without the
-other subtask, or a reviewer couldn't judge one without the other. Give the
-reason for each grouping.
+Order the subtasks so each one comes after its **Blocked by**, then cut that
+order into branches. By default, each subtask gets its own branch. Suggest
+putting subtasks on one branch only when a branch's tip wouldn't pass the full
+test suite without the other subtask, or a reviewer couldn't judge one without
+the other. Give the reason for each grouping.
 
 Every branch must:
 
-- have each subtask's blockers on that branch or on a branch it is based on,
-  directly or not
 - pass the full test suite at its tip
 - be a change a reviewer can judge in one sitting
 
 A prefactor gets its own branch.
 
-Number the branches and subtasks:
-
-- **Run order**: Branches with the same run order must be able to run in parallel worktrees, so they must not share a file in their subtasks' **Files**.
-- **Order on branch**: each subtask's position on its branch, after its
-  blockers.
+Branches never run in parallel. If the user wants independent groups of
+subtasks on parallel branches, tell them to use subset runs instead and stop:
+`/loopeng:stack <spec> <trunk IDs> --sweep` on a feature branch, then
+`/loopeng:stack <spec> <group IDs> --sweep` in its own worktree per group,
+branched from the trunk.
 
 ## 2. Write the plan
 
-Add this section to the spec, after **Suggested splits**, replacing any existing
-one:
+Add this section to the spec, after **Dependencies and blockers**, replacing any
+existing one:
 
 ```
 ## Branch plan
 
 Starting branch: `<branch>`
 
-| Run order | Branch | Based on | Subtasks |
+| Order | Branch | Based on | Subtasks |
 |---|---|---|---|
 | <n> | `<branch>` | `<branch>` | <IDs, in order on the branch> |
 ```
 
-List the rows by run order. When the root is the starting branch, its **Based
-on** is `none`. Add these two lines to each subtask, after
-**Blocked by**:
+List the rows in chain order. Each branch's **Based on** is the branch in the
+row before it. The first branch's **Based on** is the starting branch, or `none`
+when the first branch is the starting branch. Add these two lines to each
+subtask, after **Blocked by**:
 
 ```
 - **Branch**: `<branch>`
@@ -85,13 +80,4 @@ on** is `none`. Add these two lines to each subtask, after
   discuss them, revise the spec file, and say what changed.
 - On explicit approval, set `**Status:** approved`.
 
-Then stop and give the user the commands to run:
-
-- Everything in sequence: `/loopeng:stack <spec file path>`.
-- Parallel worktrees: run the root branch first, with
-  `/loopeng:stack <spec file path> <its subtask IDs>`. If it holds
-  no subtasks, set the spec's **Base commit** to `git rev-parse HEAD` on it and
-  commit the spec there instead. Once the
-  subtasks on its base are done, each later branch gets its own worktree and the
-  same command with its subtask IDs:
-  `git worktree add -b <branch> <path> <based on>`.
+Then stop and give the user the command to run: `/loopeng:stack <spec file path>`.

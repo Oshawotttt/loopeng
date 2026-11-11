@@ -40,7 +40,7 @@ If the spec is committed with no **Base commit**, stop and ask.
 ## Direct invocation
 
 The loop and sweep skills run this way when a human types them
-instead of a branch skill reading them:
+instead of `stack` reading them:
 
 1. Load the spec, then check the repo.
 2. Work on the current branch. If it is the default branch, stop and tell the
@@ -53,5 +53,5 @@ commit is the spec's **Base commit**.
 ## Git limits
 
 Invoking a loopeng execution skill is the user's explicit permission for the
-commits its steps describe. A branch skill also grants the branch writes it
+commits its steps describe. `stack` also grants the branch writes it
 describes. Every other git write, including any push, needs a separate request.

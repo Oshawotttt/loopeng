@@ -10,7 +10,7 @@ disable-model-invocation: true
 Focus: $ARGUMENTS
 
 Build or update the output file: a single paged report a person reads to
-understand the project fast. Agents never read it.. The markdown docs stay the source of
+understand the project fast. Agents never read it. The markdown docs stay the source of
 truth.
 
 **The output file** is the `.html` file the arguments name, in `docs/` if
@@ -93,8 +93,5 @@ in your report.
   Write or Edit tool. Don't publish it with the Artifact tool and don't
   load artifact-design, unless the user asks for a link. Then publish
   that same file as it is, with no restyling.
-- If the project has a docs map, check it lists the output file as
-  "visual summary, never edit by hand, never read by agents". If it
-  doesn't, tell the user the row to add; don't edit `CLAUDE.md` yourself.
 - Report in a few lines: created or updated, the sections changed, the
   source docs used, and any doc conflicts found.

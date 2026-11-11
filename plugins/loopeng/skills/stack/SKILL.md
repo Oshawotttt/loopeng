@@ -1,13 +1,13 @@
 ---
 name: stack
-description: Execute an approved spec's Branch plan on local branches, whole or for a subset of its subtasks, with no push or PR.
-argument-hint: <path to an approved spec file with a Branch plan from /loopeng:orchestrate> [subtask IDs]
+description: Execute an approved spec's Branch plan as a chain of local branches, or a named subset of its subtasks on the current branch, with no push or PR.
+argument-hint: <path to an approved spec file> [subtask IDs] [--sweep]
 disable-model-invocation: true
 ---
 
-# Loop engineering: branches per spec
+# Loop engineering: run a spec
 
-Spec file, then any subtask IDs: $ARGUMENTS
+Input: $ARGUMENTS
 
 This skill owns the git hygiene and the run order. Read these files, relative
 to this skill's base directory, and follow them when a step names them:
@@ -16,68 +16,78 @@ to this skill's base directory, and follow them when a step names them:
 - `../loop/SKILL.md`
 - `../sweep/SKILL.md`
 
-A **whole run** has no subtask IDs, or names every subtask. A **subset run**
-names fewer. A subset run does not sweep: the user invokes the other subtasks
-and the final sweep.
-
 ## 1. Prepare
 
 1. Follow **Load the spec** and **Check the repo**.
-2. If the spec has no **Branch plan**, stop and tell the user to run
-   `/loopeng:orchestrate <spec file>`.
-3. If the root branch is the default branch, stop and ask.
-4. On a subset run, check that nothing is blocked. Every blocker of a named
-   subtask must be named too, or be done at the tip of the subtask's branch
-   (`git show <branch>:<spec path>`), or of its **Based on** branch if its
-   branch doesn't exist. If any is blocked, list it with its blockers and stop.
+2. Set the scope:
+   - **Full run** (no subtask IDs given): scope is every subtask. If the spec
+     has no **Branch plan**, stop and tell the user to run
+     `/loopeng:orchestrate <spec file>`. If the first branch in the Branch
+     plan is the default branch, stop and ask.
+   - **Subset run** (subtask IDs given): scope is those IDs. If an ID isn't
+     in the spec, stop and say so. The run ignores the Branch plan and works
+     on the current branch. If that is the default branch, stop and tell the
+     user to switch.
+3. Sweep: a full run always sweeps. A subset run sweeps only with `--sweep`.
 
-## 2. Execute each branch, by run order
+## 2. Execute
 
-Track the run's subtasks in the task list. Run them yourself, serially, in this
-session.
+Track the subtasks in scope in the task list, in run order. Mark done subtasks
+complete. Run them yourself, serially, in this session.
 
-A whole run takes every branch. A subset run takes the branches holding its
-subtasks, plus the root branch if the spec isn't committed on it. For each
-branch:
+A **Sweeps** entry counts only if its **end** commit is an ancestor of `HEAD`
+(entries from sibling branches don't).
+
+**Run base**: the **end** commit of the latest counting **Sweeps** entry. If
+there is none, the spec's **Base commit**.
+
+### Full run
+
+For each branch in the Branch plan, in order:
 
 1. Switch to the branch if it exists. Otherwise create it from its **Based on**
-   branch. If the **Based on** branch doesn't exist, stop and name it.
-2. On the root branch, follow **Commit the spec**.
-3. Set the base commit: the spec's **Base commit** on the root branch,
-   otherwise `git merge-base HEAD <based on>`.
-4. For each of the run's subtasks on this branch, by **Order on branch**, skip
-   it if it is done. Otherwise run the loop skill with the spec path, that
-   subtask as the scope, and the base commit. Skip its direct-invocation steps.
+   branch.
+2. On the first branch, follow **Commit the spec**.
+3. Set the base commit: the run base on the first branch, otherwise
+   `git merge-base HEAD <based on>`.
+4. For each subtask on this branch, by **Order on branch**, skip it if it is
+   done. Otherwise run the loop skill with the spec path, that subtask as the
+   scope, and the base commit. Skip its direct-invocation steps.
 5. Continue to the next branch without pausing.
+
+### Subset run
+
+1. Follow **Commit the spec**.
+2. For each subtask in scope, in the spec's run order, skip it if it is done.
+   Otherwise run the loop skill with the spec path, that subtask as the scope,
+   and the run base. Skip its direct-invocation steps.
 
 If a loop stops, the run stops with it.
 
-## 3. Sweep (whole run only)
+## 3. Sweep
 
-A leaf branch is one that no other branch is based on. For each leaf branch, by
-run order:
+Skip this step if step 1 said not to sweep.
 
-1. Switch to it.
-2. Set the scope: the subtasks on the leaf and on the branches it is based on,
-   directly or not, that are in no earlier sweep's scope.
-3. Set the base commit: the spec's **Base commit** if the scope has a
-   subtask on the root branch. Otherwise `git merge-base HEAD <branch>`, where `<branch>`
-   is the nearest branch the leaf is based on, directly or not, with no subtask
-   in the scope.
-4. Run the sweep skill with the spec path, scope and base commit. Skip its
-   direct-invocation steps.
+Sweep scope: the subtasks in scope that are not listed in a counting **Sweeps**
+entry. If none are left, skip the sweep and say so.
 
-If a sweep stops, the run stops with it.
+On the current branch (the last branch on a full run), run the sweep skill with
+the spec path, the sweep scope and the run base. Skip its direct-invocation
+steps.
+
+On a subset run, then record the sweep in the spec. Add a `## Sweeps` section
+at the end of the spec if there is none, and append:
+
+```
+- <sweep scope IDs> on `<branch>`: base `<run base>`, end `<HEAD sha>`
+```
+
+Commit the spec file alone, by explicit path, with
+`docs(specs): record sweep of <sweep scope IDs>`. The next run that branches
+from here uses that end commit as its run base.
 
 ## 4. Finish
 
-**Whole run**: report each branch and its subtasks, by run order, then each
-sweep's report.
-
-**Subset run**: report each branch and its subtasks, the commits made, and each
-subtask's objectiveness FAILs, main verifier rounds and Decisions made. Then list
-the spec's subtasks not yet done. State that no sweep ran. Give the command for
-each leaf branch, to run on that branch once its subtasks are done:
-`/loopeng:sweep <spec file> <IDs on the leaf and the branches it is based on>`.
-
-Remind the user that nothing was pushed.
+Report each branch and its subtasks, in order, then the sweep's report (or that
+no sweep ran). End with the last branch's name. Remind the user that nothing was
+pushed.

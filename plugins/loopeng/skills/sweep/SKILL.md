@@ -1,7 +1,7 @@
 ---
 name: sweep
 description: Run the final code review, docs update and report for an approved spec's committed subtasks.
-argument-hint: <path to an approved spec file>
+argument-hint: <path to an approved spec file> [subtask IDs]
 disable-model-invocation: true
 ---
 
@@ -9,7 +9,7 @@ disable-model-invocation: true
 
 Input when typed by a human: $ARGUMENTS
 
-A branch skill that reads this file supplies the spec path, scope and base
+When `stack` reads this file, it supplies the spec path, scope and base
 commit. Otherwise, follow **Direct invocation** in
 `../../references/run.md`, relative to this skill's base directory.
 
@@ -51,11 +51,14 @@ the run must end up in the docs, code or tests.
 
 - Spawn one `docs-updater` (`subagent_type: "loopeng:docs-updater"`,
   `run_in_background: false`). The prompt contains only: the repo path, the spec
-  file path, the base commit, the doc paths, the md file to update if the spec
+  file path, the base commit, the md file to update if the spec
   names one, and the scope's subtask IDs if the scope is not the whole spec. It
   edits the docs and returns a coverage table. It makes no commits.
 - Leave the docs to the agent. Check `git status`: it must show only doc files
   changed. Anything else, stop and flag it to the user.
+- If the table's **Files changed** lists a `(new)` file, follow
+  `../generate-map/SKILL.md`, relative to this skill's base directory, steps
+  1-4, to add it to the docs map in `CLAUDE.md`.
 - Commit the changed doc files (Commit step rules) in one commit. If nothing
   changed, make no commit.
 - Items the table lists as not placed go in the report, with its reason.
@@ -78,5 +81,5 @@ Limit the report to the scope. Mark any count this session didn't observe as
 - **Human checks**: end the report with the full checklist from the spec, ready
   for the user to run, with steps and expected results.
 
-Read by a branch skill: return to it. Typed by a human: remind them that nothing
+Read by `stack`: return to it. Typed by a human: remind them that nothing
 was pushed.

@@ -11,7 +11,7 @@ Input when typed by a human: $ARGUMENTS
 
 This skill covers exactly one subtask. Its caller owns iteration over subtasks.
 
-A branch skill that reads this file supplies the spec path, the subtask as the
+When `stack` reads this file, it supplies the spec path, the subtask as the
 scope, and the base commit. Otherwise, follow **Direct invocation** in
 `../../references/run.md`, relative to this skill's base directory. The
 subtask ID in the input is the whole scope. If the input names no subtask, stop
@@ -40,6 +40,10 @@ not done, stop and say so. Otherwise run steps 2-4.
 - Follow the subtask's **Decisions**, and the spec's **Out of scope** and
   **Interfaces** exactly. If one turns out impossible or wrong, stop and flag
   it to the user; don't work around it.
+- You may update the spec file when the work shows it needs to change (e.g. its
+  **Files** or **Seams**), as long as every Decision, Interface, Out of scope
+  item and acceptance criterion still holds. Say what changed and add it to the
+  doc deltas.
 - If a test fails on a shared or environmental resource (`EADDRINUSE`, a
   database lock, a "database already exists" error, a locked temp file), wait
   briefly and rerun. Don't change code to work around it. If it keeps failing,
@@ -50,9 +54,8 @@ not done, stop and say so. Otherwise run steps 2-4.
   no doc). The diff shows what changed, not why, so this is the only record of
   the reason.
 - Before verification, tick each acceptance criterion in the spec file that its
-  test now proves. Leave unproved ones unticked.
-- If the spec changes during implementation, update the spec file, say so, and
-  add the change to the doc deltas.
+  test now proves. Every criterion must be ticked before verification. If one
+  can't be proved by a test or command, stop and flag it to the user.
 
 ## 3. Verify: objectiveness check, then the main verifier
 
@@ -68,8 +71,9 @@ Every verification prompt goes through two agents, in order:
 2. **`main-verifier`** (`subagent_type: "loopeng:main-verifier"`).
    - Spawn a new one for the subtask's first verification round, and keep its
      agent ID.
-   - Re-verification of the same subtask after a FAIL: continue that agent with
-     `SendMessage`, so it re-checks its own findings.
+   - Re-verification after a FAIL, of the same subtask or the same code-review
+     fix round: continue that agent with `SendMessage`, so it re-checks its own
+     findings.
    - Spawn a fresh one for each code-review fix round.
    - Pass no summary of earlier subtasks.
 
@@ -112,7 +116,7 @@ Main verifier verdicts:
   Stop and flag it to the user with evidence. Nothing gets committed until it's
   resolved.
 
-Limits, counted separately per subtask:
+Limits, counted separately per subtask and per code-review fix round:
 - **3 objectiveness FAILs**: stop and flag it to the user with the latest
   objectiveness output. Don't send a 4th prompt.
 - **3 main-verifier FAILs**: stop and flag it to the user with the main
@@ -133,7 +137,7 @@ Limits, counted separately per subtask:
 
 ## 5. Finish
 
-Read by a branch skill: return to it, keeping the subtask's objectiveness FAIL
+Read by `stack`: return to it, keeping the subtask's objectiveness FAIL
 count, main verifier rounds and Decisions made for the sweep's report. Typed by
 a human: report those, the commit made, the acceptance criteria and the
 subtasks left, tell the user that `/loopeng:sweep` has not run, and

@@ -15,7 +15,8 @@ Interfaces, and the named subtask's Goal, Decisions, Acceptance criteria
 and Doc deltas. A new subtask must not break or contradict what earlier
 subtasks built: to check that, run the full test suite and read
 `git log <base>..HEAD` and `git diff <base>...HEAD` for the files this
-subtask touches.
+subtask touches. A code-review fix round names no subtask: check its
+changes against the spec as a whole.
 
 Doc deltas are applied to the docs once, after the last subtask of the
 run, not per subtask. Never FAIL because a doc doesn't yet contain a subtask's Doc
