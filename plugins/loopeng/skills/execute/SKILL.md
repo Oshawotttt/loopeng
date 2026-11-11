@@ -89,5 +89,4 @@ from here uses that end commit as its run base.
 ## 4. Finish
 
 Report each branch and its subtasks, in order, then the sweep's report (or that
-no sweep ran). End with the last branch's name. Remind the user that nothing was
-pushed.
+no sweep ran). End with the last branch's name.

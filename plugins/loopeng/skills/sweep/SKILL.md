@@ -65,21 +65,21 @@ the run must end up in the docs, code or tests.
 
 ## 3. Report
 
-Limit the report to the scope. Mark any count this session didn't observe as
-`not recorded`.
+The user assumes everything in the spec as approved (`git show <commit that
+added the spec>:<spec path>`) is done. Report only where the run differs from
+it: what was added or changed, and what was left undone. Never repeat what the
+approved spec already says. Limit the report to the scope.
 
-- Give a summary: the spec file path, the commits made (hash + message, marking
-  any not in the approved spec), per subtask the objectiveness FAILs and
-  main-verifier rounds, how many code-review rounds ran and why the last one was
-  the last, and the Standards findings not fixed (with reasons).
-- **Docs**: the docs-updater's coverage table, and any items it couldn't place,
-  with its reasons.
-- **Acceptance criteria**: each one, grouped by subtask, marked `met` or `not
-  met`, with the test or command that proves it.
-- **Decisions made**: every entry, grouped by subtask, and where it was recorded
-  (from the coverage table).
-- **Human checks**: end the report with the full checklist from the spec, ready
-  for the user to run, with steps and expected results.
-
-Read by `execute`: return to it. Typed by a human: remind them that nothing
-was pushed.
+- **Not in the approved spec**: find it with `git diff <commit that added the
+  spec>..HEAD -- <spec path>`, ignoring ticked checkboxes and **Sweeps**
+  entries, and with the commit log. Grouped by subtask:
+  - **New decisions**: each design decision the spec didn't dictate, why it
+    was made, and where it was recorded (from the coverage table).
+  - **Spec changes**: each edit to the approved text (e.g. **Files**,
+    **Seams**, acceptance criteria), before and after.
+  - **Extra commits**: commits whose message wasn't in the spec (e.g.
+    code-review fixes), hash + message.
+  Write "none" if there is nothing.
+- **Left undone**: anything in the approved spec that isn't done, such as a
+  doc delta the docs-updater couldn't place, plus Standards findings not
+  fixed. Each with its reason. Omit if empty.

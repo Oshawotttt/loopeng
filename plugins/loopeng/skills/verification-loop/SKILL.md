@@ -137,8 +137,7 @@ Limits, counted separately per subtask and per code-review fix round:
 
 ## 5. Finish
 
-Read by `execute`: return to it, keeping the subtask's objectiveness FAIL
-count, main verifier rounds and Decisions made for the sweep's report. Typed by
-a human: report those, the commit made, the acceptance criteria and the
-subtasks left, tell the user that `/loopeng:sweep` has not run, and
-remind them that nothing was pushed.
+Read by `execute`: continue with its next step, keeping the Decisions made for
+the sweep's report. Typed by a human: report the commit made, the Decisions
+made and any spec changes, and the subtasks left, and tell the user that
+`/loopeng:sweep` has not run.
