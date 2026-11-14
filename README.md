@@ -13,17 +13,18 @@ Install this plugin:
 /plugin install loopeng@loopeng
 ```
 
-Install the plugins it depends on. These are not included:
+Install the plugin it depends on. It is not included:
 
 ```
-/plugin marketplace add mattpocock/skills
-/plugin install mattpocock-skills@mattpocock
 /plugin marketplace add cathrynlavery/diagram-design
 /plugin install diagram-design@diagram-design
 ```
 
-- `mattpocock-skills`: required. The loopeng execution skills call its `tdd` and `code-review` skills.
 - `diagram-design`: needed only for `/loopeng:generate-summary`.
+
+The `tdd` skill and the `spec-reviewer` and `standards-reviewer` agents are
+adapted from [mattpocock/skills](https://github.com/mattpocock/skills)
+(MIT, see `plugins/loopeng/LICENSE-mattpocock`).
 
 ## Workflow
 
@@ -57,4 +58,7 @@ Only a person or `/loopeng:execute` runs these. They set `disable-model-invocati
 | `plugins/loopeng/skills/generate-summary` | Visual summary from the docs |
 | `plugins/loopeng/agents/objectiveness-verifier.md` | Checks each verification prompt is objective |
 | `plugins/loopeng/agents/main-verifier.md` | Verifies a run's subtasks (one agent per run) or a code-review fix round |
+| `plugins/loopeng/agents/sweep-orchestrator.md` | Runs the sweep in a fresh context: reviews, fixes, docs, report |
+| `plugins/loopeng/agents/spec-reviewer.md` | Reviews the diff against the spec (sweep's Spec loop) |
+| `plugins/loopeng/agents/standards-reviewer.md` | Reviews the diff against coding standards and code smells (sweep's Standards pass) |
 | `plugins/loopeng/agents/docs-updater.md` | Updates docs from the spec and the diff |
