@@ -62,3 +62,41 @@ Only a person or `/loopeng:execute` runs these. They set `disable-model-invocati
 | `plugins/loopeng/agents/spec-reviewer.md` | Reviews the diff against the spec (sweep's Spec loop) |
 | `plugins/loopeng/agents/standards-reviewer.md` | Reviews the diff against coding standards and code smells (sweep's Standards pass) |
 | `plugins/loopeng/agents/docs-updater.md` | Updates docs from the spec and the diff |
+
+## Context bloat
+
+The plugin includes a context meter, a mod that shows how many tokens fill the current context window. It helps you keep track of the context window and avoid context bloat.
+
+It is based on the idea of the "dumb zone": as the context window fills, the model's output gets worse. The meter changes colour as you approach that zone, to signal that you may need a fresh window:
+
+| Tokens in context | Colour | Meaning |
+|---|---|---|
+| Under 150k | Green | Fine |
+| 150k to 400k | Orange | Approaching the dumb zone. Consider wrapping up or starting fresh |
+| 400k and over | Red | In the dumb zone. Start a fresh window |
+
+Where it shows:
+
+- CLI and desktop app: `● 182k` at the right of the prompt footer.
+- VSCode: a status entry under the prompt, `loopeng 🟢 182k`.
+
+It appears after the first response of a session, and again after the first response that follows a compaction.
+
+It is on by default. To turn it off, use either way:
+
+- Run `/config` and set **Context meter** to off.
+- Or add `pluginConfigs` to your user settings, `~/.claude/settings.json`:
+
+  ```json
+  {
+    "pluginConfigs": {
+      "loopeng": { "contextMeter": false }
+    }
+  }
+  ```
+
+  If the file already has content, add only the `pluginConfigs` key next to the keys already there.
+
+To turn it back on, set it to `true` or remove the entry. Your choice is kept when you update the plugin.
+
+The code is in `plugins/loopeng/hooks/context-meter.tsx`. The thresholds are `WARN` and `DANGER` at the top of that file.
