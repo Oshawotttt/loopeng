@@ -1,6 +1,16 @@
 {
   "name": "loopeng",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "Loop engineering workflow: spec, build, verify, review, docs",
-  "author": { "name": "Oshawotttt" }
+  "author": {
+    "name": "Oshawotttt"
+  },
+  "userConfig": {
+    "contextMeter": {
+      "type": "boolean",
+      "title": "Context meter",
+      "description": "Show the context-window token count with a coloured dot (green under 150k, orange to 400k, red past 400k).",
+      "default": true
+    }
+  }
 }
