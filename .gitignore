@@ -1,1 +1,3 @@
 *.zip
+# Claude Code writes these editor types; regenerated per version
+plugins/loopeng/.claude-plugin/types/
