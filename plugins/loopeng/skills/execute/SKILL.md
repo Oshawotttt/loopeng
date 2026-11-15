@@ -79,7 +79,7 @@ entry. If none are left, skip the sweep and say so.
 
 On the current branch (the last branch on a full run), run the sweep skill with
 the spec path, the sweep scope and the run base. Skip its direct-invocation
-steps.
+steps. If the sweep stops, the run stops with it.
 
 On a subset run, then record the sweep in the spec. Add a `## Sweeps` section
 at the end of the spec if there is none, and append:

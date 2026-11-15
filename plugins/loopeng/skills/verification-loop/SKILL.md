@@ -35,7 +35,7 @@ not done, stop and say so. Otherwise run steps 2-4.
 - Note `HEAD` before you start: the **subtask start**.
 - Commit as you go, following **Commit rules**: each time a logical change is
   done and the tests pass, commit it. Keep the spec file out of these commits.
-- Build test-first: call the Skill tool with "mattpocock-skills:tdd". Test only
+- Build test-first: call the Skill tool with "loopeng:tdd". Test only
   at the subtask's seams. Every acceptance criterion needs a test (or command)
   that proves it.
 - Run typechecking and single test files often while building. Run the full
