@@ -9,7 +9,13 @@
     - [x] One branch per spec.
     - [x] Multiple branches per spec. Suggests a grouping, and the user approves it.
 - [x] Rename skills to make naming consistent.
-- [ ] Add a README that describes and justifies the process.
 - [x] Separate the main execution loop from final sweep, then add a skill to execute one subtask
-- [ ] Remove dependencies on Matt Pocock skills
+- [x] Remove dependencies on Matt Pocock skills
 - [ ] Change DECISION.md to ADRs
+- [ ] Potato
+  - [ ] Add rules to prevent unnecessary comments.
+  - [ ] Add rules to stop the AI from justifying doing the wrong thing.
+  - [ ] Write a skill that compiles and reviews docs.
+- [ ] Write in README.md
+  - [ ] Justify the whole process
+  - [ ] Justify the short commit messages and PR descriptions: people now push back on verbose AI-generated text.

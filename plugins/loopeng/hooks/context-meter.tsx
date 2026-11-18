@@ -1,3 +1,4 @@
+import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Register, RenderSurface } from 'claude-code'
 
 // Context meter: a coloured dot and the live context-window token count.
@@ -8,6 +9,10 @@ import type { EngineInterface, Register, RenderSurface } from 'claude-code'
 // Thresholds in tokens. Below WARN: green. WARN to DANGER: orange. Past DANGER: red.
 const WARN = 150_000
 const DANGER = 400_000
+
+// Held in session state, not a module variable: `ui.render` answers are cached
+// until something they read changes, and a write here redraws the footer.
+const tokensAtom = atom({ plugin: 'loopeng', key: 'tokens' } as const, null)
 
 const formatTokens = (n: number): string =>
   n >= 1_000_000 ? `${(n / 1_000_000).toFixed(2)}M` : `${Math.round(n / 1000)}k`
@@ -22,10 +27,16 @@ const dotFor = (tokens: number): string =>
 const STATUS_SURFACES: readonly RenderSurface[] = ['vscode']
 
 // Shows or clears the status entry: only where a status surface is attached.
-async function refreshStatus($: EngineInterface, tokens: number | undefined): Promise<void> {
+async function refreshStatus($: EngineInterface): Promise<void> {
+  const tokens = await read($, tokensAtom)
   const surfaces = await $.session.surfaces()
   const wantsStatus = surfaces.some(s => STATUS_SURFACES.includes(s))
-  $.ui.status(wantsStatus && tokens !== undefined ? `${dotFor(tokens)} ${formatTokens(tokens)}` : undefined)
+  $.ui.status(wantsStatus && tokens !== null ? `${dotFor(tokens)} ${formatTokens(tokens)}` : undefined)
+}
+
+async function setTokens($: EngineInterface, tokens: number | undefined): Promise<void> {
+  await update($, tokensAtom, () => tokens ?? null)
+  await refreshStatus($)
 }
 
 export const register: Register = (on, options) => {
@@ -33,32 +44,28 @@ export const register: Register = (on, options) => {
     return
   }
 
-  // Module variable: a reload re-reads it in session.start.
-  let tokens: number | undefined
-
   on('session.start', async ($, e, next) => {
     const result = await next(e)
-    tokens = (await $.session.usage()).context.tokens
-    await refreshStatus($, tokens)
+    await setTokens($, (await $.session.usage()).context.tokens)
     return result
   })
 
   on('session.attach', async ($, e, next) => {
     const result = await next(e)
-    await refreshStatus($, tokens)
+    await refreshStatus($)
     return result
   })
 
   on('session.measure', async ($, e, next) => {
     if (e.changed.includes('context')) {
-      tokens = e.context.tokens
-      await refreshStatus($, tokens)
+      await setTokens($, e.context.tokens)
     }
     return next(e)
   })
 
   on('ui.render', { component: 'SessionMode' }, async ($, e, next) => {
-    if (tokens === undefined) {
+    const tokens = await read($, tokensAtom)
+    if (tokens === null) {
       return next(e)
     }
     const { Box, Text } = $.ui.resolve(e)
